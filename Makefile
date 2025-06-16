@@ -12,12 +12,12 @@
 
 NAME = pipex
 
-SRC = 
+SRC = src/free_exits.c src/input_val.c pipex.c
 
 OBJ = $(SRC:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g # retirar flag antes de entregar
 
 all: $(NAME)
 
