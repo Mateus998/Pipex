@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:25:11 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/17 16:17:03 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/17 18:14:45 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ t_pipex	*input_validation(char **argv, char **envp)
 	t_pipex	*pipex;
 
 	pipex = create_pipex();
-    file_descriptors_check(argv, pipex);
+	file_descriptors_check(argv, pipex);
 	pipex->cmd1 = ft_split(argv[2], ' ');
 	pipex->cmd2 = ft_split(argv[3], ' ');
 	if (!pipex->cmd1 || !pipex->cmd2)
@@ -32,18 +32,18 @@ t_pipex	*input_validation(char **argv, char **envp)
 	return (pipex);
 }
 
-void file_descriptors_check(char **argv, t_pipex *pipex)
+void	file_descriptors_check(char **argv, t_pipex *pipex)
 {
-    pipex->fd[0] = open(argv[1], O_RDONLY);
+	pipex->fd[0] = open(argv[1], O_RDONLY);
 	if (pipex->fd[0] == -1)
 		free_error(pipex, "infile open error");
-    close(pipex->fd[0]);
-    pipex->fd[0] = -1;
+	close(pipex->fd[0]);
+	pipex->fd[0] = -1;
 	pipex->fd[1] = open(argv[4], O_RDWR | O_CREAT | O_TRUNC);
-    if (pipex->fd[1] == -1)
+	if (pipex->fd[1] == -1)
 		free_error(pipex, "outfile open error");
-    close(pipex->fd[1]);
-    pipex->fd[1] = -1;
+	close(pipex->fd[1]);
+	pipex->fd[1] = -1;
 }
 
 t_pipex	*create_pipex(void)

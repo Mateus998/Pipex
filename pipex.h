@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:24:38 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/17 15:54:34 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/17 18:14:35 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ t_pipex		*input_validation(char **argv, char **envp);
 char		**find_path(char **envp);
 char		*command_path(char *cmd, char **path);
 t_pipex		*create_pipex(void);
-void file_descriptors_check(char **argv, t_pipex *pipex);
+void		file_descriptors_check(char **argv, t_pipex *pipex);
 
 #endif
