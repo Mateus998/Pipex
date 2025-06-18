@@ -6,43 +6,44 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 13:38:38 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/17 15:31:35 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/18 19:24:18 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	pipex_print(t_pipex *pipex)
+void	pipex_process(char **argv, char **envp, t_pipex *px)
 {
-	int	i;
+	pid_t	p[2];
 
-	i = 0;
-	ft_printf("fd1\n%i\n", pipex->fd[0]);
-	ft_printf("\ncmd1\n");
-	while (pipex->cmd1[i])
-		ft_printf("%s ", pipex->cmd1[i++]);
-	ft_printf("\n\ncmdpath1\n%s\n", pipex->cmdpath1);
-	ft_printf("\nfd2\n%i\n", pipex->fd[1]);
-	i = 0;
-	ft_printf("\ncmd2\n");
-	while (pipex->cmd2[i])
-		ft_printf("%s ", pipex->cmd2[i++]);
-	ft_printf("\n\ncmdpath2\n%s\n", pipex->cmdpath2);
-	i = 0;
-	ft_printf("\npath\n");
-	while (pipex->path[i])
-		ft_printf("%s\n", pipex->path[i++]);
+	if (pipe(px->p_fd) < 0)
+		error_exit("pipe func error");
+	p[0] = fork();
+	if (p[0] < 0)
+		error_exit("fork1 func error");
+	else if (p[0] == 0)
+		read_process(argv[2], envp, px);
+	p[1] = fork();
+	if (p[1] < 0)
+		error_exit("fork2 func error");
+	else if (p[1] == 0)
+		write_process(argv[3], envp, px);
+	close_px(px);
+	wait(NULL);
+	wait(NULL);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_pipex	*pipex;
+	t_pipex	px;
 
 	if (argc != 5)
-		error_exit("Must have 4 arguments");
-	pipex = input_validation(argv, envp);
-	pipe_process(pipex);
-	pipex_print(pipex);
-	free_pipex(pipex);
+	{
+		ft_putendl_fd("Error\nMust have 4 arguments", 2);
+		exit(1);
+	}
+	ft_memset(&px, 0, sizeof(t_pipex));
+	open_files(argv[1], argv[4], &px);
+	pipex_process(argv, envp, &px);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:24:38 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/17 18:14:35 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/18 19:19:44 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,23 @@
 
 typedef struct s_pipex
 {
-	int		fd[2];
-	char	**cmd1;
-	char	*cmdpath1;
-	char	**cmd2;
-	char	*cmdpath2;
-	char	**path;
-}			t_pipex;
+	int	fd[2];
+	int	p_fd[2];
+}		t_pipex;
 
 // frees & errors
-void		error_exit(char *msg);
-void		free_error(t_pipex *pipex, char *msg);
-void		free_array(char **array);
-void		free_pipex(t_pipex *pipex);
+void	error_exit(char *msg);
+void	free_array(char **array);
+void	close_px(t_pipex *px);
 
-// parsing
-t_pipex		*input_validation(char **argv, char **envp);
-char		**find_path(char **envp);
-char		*command_path(char *cmd, char **path);
-t_pipex		*create_pipex(void);
-void		file_descriptors_check(char **argv, t_pipex *pipex);
+// utils
+void	open_files(char *file1, char *file2, t_pipex *px);
+char	**find_path_var(char **envp);
+char	*cmd_path(char **envp, char **args);
+
+// process
+void	pipe_process(void);
+void	read_process(char *cmd, char **envp, t_pipex *px);
+void	write_process(char *cmd, char **envp, t_pipex *px);
 
 #endif

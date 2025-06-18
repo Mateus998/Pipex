@@ -6,18 +6,18 @@
 #    By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 12:45:57 by mateferr          #+#    #+#              #
-#    Updated: 2025/06/11 12:56:07 by mateferr         ###   ########.fr        #
+#    Updated: 2025/06/18 18:52:22 by mateferr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 
-SRC = src/free_exits.c src/input_val.c pipex.c
+SRC = src/free_exits.c src/utils.c pipex.c
 
 OBJ = $(SRC:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g # retirar flag antes de entregar
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 

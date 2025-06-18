@@ -1,2 +1,3 @@
-infile
-to read 
+line1
+line2
+line3
