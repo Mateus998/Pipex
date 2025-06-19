@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 18:21:51 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/19 11:33:06 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/19 17:48:48 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ char	*cmd_path(char **envp, char **args)
 		free(pathname);
 		i++;
 	}
+	ft_putendl_fd(args[0], 2);
 	free_array(args);
 	return (ft_putendl_fd("command not found", 2), NULL);
 }
@@ -92,13 +93,21 @@ void	duplicate_fds(int step, t_pipex *px)
 	{
 		if (dup2(px->fd[0], STDIN_FILENO) < 0)
 			error_exit("read infile dup error");
-		if (dup2(px->p_fd[1], STDOUT_FILENO) < 0)
-			error_exit("read outfile dup error");
+		if (dup2(px->p1_fd[1], STDOUT_FILENO) < 0)
+			error_exit("begin write dup error");
 	}
 	else
 	{
-		if (dup2(px->p_fd[0], STDIN_FILENO) < 0)
-			error_exit("write infile dup error");
+		if (step % 2 == 0)
+		{
+			if (dup2(px->p2_fd[0], STDIN_FILENO) < 0)
+				error_exit("end read p2_fd dup error");
+		}
+		else
+		{
+			if (dup2(px->p1_fd[0], STDIN_FILENO) < 0)
+				error_exit("end read p1_fd dup error");
+		}
 		if (dup2(px->fd[1], STDOUT_FILENO) < 0)
 			error_exit("write outfile dup error");
 	}
