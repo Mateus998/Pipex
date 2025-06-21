@@ -20,18 +20,10 @@ void	error_exit(char *msg)
 
 void	close_px(t_pipex *px)
 {
-	if (px->fd[0] >= 0)
-		close(px->fd[0]);
-	if (px->fd[1] >= 0)
-		close(px->fd[1]);	
-	if (px->p1_fd[0] >= 0)
-		close(px->p1_fd[0]);
-	if (px->p1_fd[1] >= 0)
-		close(px->p1_fd[1]);
-	if (px->p2_fd[0] >= 0)
-		close(px->p2_fd[0]);
-	if (px->p2_fd[1] >= 0)
-		close(px->p2_fd[1]);
+	close(px->prev[1]);
+	close(px->corr[0]);
+	close(px->prev[0]);
+	close(px->corr[1]);
 }
 
 void	free_array(char **array)

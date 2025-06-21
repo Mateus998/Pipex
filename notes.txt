@@ -1,0 +1,33 @@
+Pipex multi pipe grafic
+
+Bash example:
+Infile.txt < cmd1 | cmd2 | cmd3 | cmd4 | cmd5 > outfile.txt
+
+Pipex representation
+
+Fds: int p1[2], p2[2], fd_in, fd_out
+Int Corr
+int prev
+
+pipe(p1)
+Filho - fork() fd_in > stdin, p1[1] > stdout, exec(cmd1)
+Pai - Close fd_in e p1[1]
+
+pipe(p2)
+Filho - fork() p1[0] > stdin, p2[1] > stdout, exec(cmd2)
+Pai - Close p1[0] e p2[1]
+
+pipe(p1)
+Filho - fork() p2[0] > stdin, p1[1] > stdout, exec(cmd3)
+Pai - Close p2[0] e p1[1]
+
+pipe(p2)
+Filho - fork() p1[0] > stdin, p2[1] > stdout, exec(cmd4)
+Pai - close p1[0] e p2[1]
+
+Filho - fork() p2[0] > stdin, fd_out > stdout, exec(cmd5)
+Pai - Close p2[0] e fd_out
+
+Dicas para codificar o loop
+Ter ponteiros var que apontam para os fds dos pipes que vao alternar e ter uma função que faz switch neles
+Assim, no loop chamo sempre o mesmo ponteiro, mas o valor dele sera diferente

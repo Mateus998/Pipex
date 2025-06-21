@@ -17,10 +17,12 @@
 
 typedef struct s_pipex
 {
-	int	fd[2];
+	int	file_fd[2];
 	int	p1_fd[2];
 	int	p2_fd[2];
 	int	argc;
+	int *corr;
+	int *prev;
 }		t_pipex;
 
 // frees & errors
@@ -35,9 +37,6 @@ char	*cmd_path(char **envp, char **args);
 
 // process
 void	pipex_process(char **argv, char **envp, t_pipex *px, int proc);
-void	fork_process(char *cmd, char **envp, t_pipex *px, int step);
-void	duplicate_fds(int step, t_pipex *px);
-void	middle_process(char *cmd, char **envp, t_pipex *px, int proc);
-void	middle_dup_fds(int proc, t_pipex *px);
+void create_pipe(t_pipex *px, int cmd);
 
 #endif

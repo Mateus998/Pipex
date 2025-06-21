@@ -12,68 +12,58 @@
 
 #include "../pipex.h"
 
-void	middle_dup_fds(int proc, t_pipex *px)
+void create_pipe(t_pipex *px, int cmd)
 {
-	if (proc % 2 == 0)
+	int *temp;
+
+	if (cmd == 2)
 	{
-		if (dup2(px->p1_fd[0], STDIN_FILENO) < 0)
-			error_exit("mid read p1_fd dup error");
-		if (dup2(px->p2_fd[1], STDOUT_FILENO) < 0)
-			error_exit("mid read p2_fd dup error");
+		px->corr = px->p1_fd;
+		px->prev = px->file_fd;
+	}
+	else if (cmd == px->argc - 2)
+	{
+		px->prev = px->corr;
+		px->corr = px->file_fd;
+		return ;
 	}
 	else
 	{
-		if (dup2(px->p2_fd[0], STDIN_FILENO) < 0)
-			error_exit("mid read p2_fd dup error");
-		if (dup2(px->p1_fd[1], STDOUT_FILENO) < 0)
-			error_exit("mid write p1_fd dup error");
+		if (px->prev == px->file_fd)
+			px->prev = px->p2_fd;
+		temp = px->corr;
+		px->corr = px->prev;
+		px->prev = temp;
 	}
+	if (pipe(px->corr) < 0)
+		error_exit("pipe creation error");
 }
 
-void	middle_process(char *cmd, char **envp, t_pipex *px, int proc)
+void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 {
-	char	*path;
-	char	**args;
+	pid_t pid;
+	char **args;
+	char *path;
 
-	args = ft_split(cmd, ' ');
-	if (!args)
-		error_exit("mid exec args error");
-	path = cmd_path(envp, args);
-	if (!path)
-		error_exit("mid exec path error");
-	middle_dup_fds(proc, px);
-	close_px(px);
-	execve(path, args, envp);
-	free(path);
-	free_array(args);
-}
-
-void	pipex_process(char **argv, char **envp, t_pipex *px, int proc)
-{
-	pid_t	p;
-
-	p = fork();
-	if (proc == 1)
+	create_pipe(px, cmd);
+	pid = fork();
+	if (pid == -1)
+		error_exit("fork process error");
+	else if (pid == 0)
 	{
-		if (p < 0)
-			error_exit("begin fork error");
-		else if (p == 0)
-			fork_process(argv[2], envp, px, 0);
+		args = ft_split(argv[cmd], ' ');
+		path = cmd_path(envp, args);
+		if (dup2(px->prev[0], STDIN_FILENO) == -1)
+			error_exit("read fd dup error");
+		if (dup2(px->corr[1], STDOUT_FILENO) == -1)
+			error_exit("write fd dup error");
+		close_px(px);
+		execve(path, args, envp);
+		free(path);
+		free_array(args);
+		error_exit("execve error");
 	}
-	else if (proc == px->argc - 4)
-	{
-		if (p < 0)
-			error_exit("end fork error");
-		else if (p == 0)
-			fork_process(argv[px->argc - 1], envp, px, proc);
-	}
-	else
-	{
-		if (p < 0)
-			error_exit("middles fork error");
-		else if (p == 0)
-			middle_process(argv[proc + 1], envp, px, proc);
-	}
-	close_px(px);
-	wait(NULL);
+	close(px->prev[0]);
+	close(px->corr[1]);
+	waitpid(pid, NULL, 0);
 }
