@@ -6,15 +6,15 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/19 17:24:45 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/23 12:18:41 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void create_pipe(t_pipex *px, int cmd)
+void	create_pipe(t_pipex *px, int cmd)
 {
-	int *temp;
+	int	*temp;
 
 	if (cmd == px->first_cmd)
 	{
@@ -36,34 +36,34 @@ void create_pipe(t_pipex *px, int cmd)
 		px->prev = temp;
 	}
 	if (pipe(px->corr) < 0)
-		error_exit("pipe creation error");
+		error_exit("pipe creation error", px);
 }
 
 void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 {
-	pid_t pid;
-	char **args;
-	char *path;
+	pid_t	pid;
+	char	**args;
+	char	*path;
 
 	create_pipe(px, cmd);
 	pid = fork();
 	if (pid == -1)
-		error_exit("fork process error");
+		error_exit("fork process error", px);
 	else if (pid == 0)
 	{
 		args = ft_split(argv[cmd], ' ');
-		path = cmd_path(envp, args);
+		path = cmd_path(envp, args, px);
 		if (dup2(px->prev[0], STDIN_FILENO) == -1)
-			error_exit("read fd dup error");
+			error_exit("read fd dup error", px);
 		if (dup2(px->corr[1], STDOUT_FILENO) == -1)
-			error_exit("write fd dup error");
+			error_exit("write fd dup error", px);
 		close_px(px);
 		execve(path, args, envp);
 		free(path);
 		free_array(args);
-		error_exit("execve error");
+		error_exit("execve error", px);
 	}
-	close(px->prev[0]);
-	close(px->corr[1]);
+	ft_close(&px->prev[0]);
+	ft_close(&px->corr[1]);
 	waitpid(pid, NULL, 0);
 }

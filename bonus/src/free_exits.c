@@ -6,24 +6,33 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:24:57 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/19 15:46:53 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/23 15:59:34 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void	error_exit(char *msg)
+void	error_exit(char *msg, t_pipex *px)
 {
+	fds_handle(px, 1);
 	perror(msg);
 	exit(1);
 }
 
 void	close_px(t_pipex *px)
 {
-	close(px->prev[1]);
-	close(px->corr[0]);
-	close(px->prev[0]);
-	close(px->corr[1]);
+	if (px->prev[1] >= 0)
+		close(px->prev[1]);
+	px->prev[1] = -1;
+	if (px->corr[0] >= 0)
+		close(px->corr[0]);
+	px->corr[0] = -1;
+	if (px->prev[0] >= 0)
+		close(px->prev[0]);
+	px->prev[0] = -1;
+	if (px->corr[1] >= 0)
+		close(px->corr[1]);
+	px->corr[1] = -1;
 }
 
 void	free_array(char **array)
@@ -39,4 +48,36 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
+}
+
+void	ft_close(int *fd)
+{
+	if (*fd >= 0)
+		close(*fd);
+	*fd = -1;
+}
+
+void	fds_handle(t_pipex *px, int closing)
+{
+	if (closing)
+	{
+		if (px->file_fd[0] >= 0)
+			close(px->file_fd[0]);
+		if (px->file_fd[1] >= 0)
+			close(px->file_fd[1]);
+		if (px->p1_fd[0] >= 0)
+			close(px->p1_fd[0]);
+		if (px->p1_fd[1] >= 0)
+			close(px->p1_fd[1]);
+		if (px->p2_fd[0] >= 0)
+			close(px->p2_fd[0]);
+		if (px->p2_fd[1] >= 0)
+			close(px->p2_fd[1]);
+	}
+	px->file_fd[0] = -1;
+	px->file_fd[1] = -1;
+	px->p1_fd[0] = -1;
+	px->p1_fd[1] = -1;
+	px->p2_fd[0] = -1;
+	px->p2_fd[1] = -1;
 }

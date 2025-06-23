@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:24:38 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/19 11:33:27 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/23 12:18:15 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ typedef struct s_pipex
 }		t_pipex;
 
 // frees & errors
-void	error_exit(char *msg);
+void	error_exit(char *msg, t_pipex *px);
 void	free_array(char **array);
-void	close_px(t_pipex *px);
+void	fds_handle(t_pipex *px, int closing);
 
 // utils
 void	open_files(char *file1, char *file2, t_pipex *px);

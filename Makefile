@@ -6,7 +6,7 @@
 #    By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 12:45:57 by mateferr          #+#    #+#              #
-#    Updated: 2025/06/19 17:57:46 by mateferr         ###   ########.fr        #
+#    Updated: 2025/06/23 17:44:11 by mateferr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ BONUS = pipex_bonus
 
 SRC = src/free_exits.c src/utils.c pipex.c
 BSRC = bonus/src/free_exits.c bonus/src/utils.c bonus/pipex.c \
-bonus/src/multi_pipe.c
+bonus/src/multi_pipe.c bonus/src/get_next_line_px.c
 
 OBJ = $(SRC:.c=.o)
 BOBJ = $(BSRC:.c=.o)
