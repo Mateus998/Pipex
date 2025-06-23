@@ -66,6 +66,7 @@ char	*cmd_path(char **envp, char **args)
 		i++;
 	}
 	free_array(args);
+	free_array(path);
 	error_exit("invalid command");
 	return (NULL);
 }

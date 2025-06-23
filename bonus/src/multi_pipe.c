@@ -16,7 +16,7 @@ void create_pipe(t_pipex *px, int cmd)
 {
 	int *temp;
 
-	if (cmd == 2)
+	if (cmd == px->first_cmd)
 	{
 		px->corr = px->p1_fd;
 		px->prev = px->file_fd;
