@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/23 12:18:41 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/24 12:25:31 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	create_pipe(t_pipex *px, int cmd)
 		px->corr = px->prev;
 		px->prev = temp;
 	}
-	if (pipe(px->corr) < 0)
+	if (pipe(px->corr) == -1)
 		error_exit("pipe creation error", px);
 }
 
@@ -53,15 +53,15 @@ void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 	{
 		args = ft_split(argv[cmd], ' ');
 		path = cmd_path(envp, args, px);
-		if (dup2(px->prev[0], STDIN_FILENO) == -1)
+		if (dup2(px->prev[0], STDIN_FILENO) < 0)
 			error_exit("read fd dup error", px);
-		if (dup2(px->corr[1], STDOUT_FILENO) == -1)
+		if (dup2(px->corr[1], STDOUT_FILENO) < 0)
 			error_exit("write fd dup error", px);
 		close_px(px);
 		execve(path, args, envp);
 		free(path);
 		free_array(args);
-		error_exit("execve error", px);
+		error_exit("invalid command", px);
 	}
 	ft_close(&px->prev[0]);
 	ft_close(&px->corr[1]);

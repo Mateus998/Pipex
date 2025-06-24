@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "limits.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "pipex.h": "c"
     }
 }

@@ -5,79 +5,36 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/11 13:38:38 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/23 17:56:55 by mateferr         ###   ########.fr       */
+/*   Created: 2025/06/19 11:38:09 by mateferr          #+#    #+#             */
+/*   Updated: 2025/06/24 17:27:41 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	pipex_process(char **argv, char **envp, t_pipex *px)
-{
-	pid_t	p[2];
-
-	if (pipe(px->p_fd) < 0)
-		error_exit("pipe func error", px);
-	p[0] = fork();
-	if (p[0] < 0)
-		error_exit("fork1 func error", px);
-	else if (p[0] == 0)
-	{
-		fork_process(argv[2], envp, px, 0);
-	}
-	p[1] = fork();
-	if (p[1] < 0)
-		error_exit("fork2 func error", px);
-	else if (p[1] == 0)
-	{
-		fork_process(argv[3], envp, px, 1);
-	}
-	fds_handle(px, 1);
-	wait(NULL);
-	wait(NULL);
-}
-
-void	command_validation(char *cmd, char **envp, t_pipex *px)
-{
-	char	**args;
-	char	*val;
-
-	args = ft_split(cmd, ' ');
-	if (!args)
-		error_exit("split error", px);
-	if (!ft_strchr(args[0], '/'))
-	{
-		val = cmd_path(envp, args);
-		free_array(args);
-		if (!val)
-			error_exit("invalid command", px);
-		free(val);
-	}
-	else
-	{
-		if (access(args[0], X_OK) < 0)
-		{
-			free_array(args);
-			error_exit("invalid command", px);
-		}
-		free_array(args);
-	}
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipex	px;
+	int		cmd;
 
-	if (argc != 5)
-	{
-		ft_putendl_fd("Error\nMust have 4 arguments", 2);
-		exit(1);
-	}
 	ft_memset(&px, 0, sizeof(t_pipex));
 	fds_handle(&px, 0);
-	command_validation(argv[2], envp, &px);
-	command_validation(argv[3], envp, &px);
-	open_files(argv[1], argv[4], &px);
-	pipex_process(argv, envp, &px);
+	px.argc = argc;
+	if (!ft_strncmp("here_doc", argv[1], 8))
+		here_doc_fill(argv, &px);
+	else
+	{
+		px.file_fd[0] = open(argv[1], O_RDONLY);
+		if (px.file_fd[0] == -1)
+			perror(argv[1]);
+		px.first_cmd = 2;
+	}
+	cmd = px.first_cmd;
+	while (cmd <= px.argc - 2)
+	{
+		if (cmd == px.argc - 2)
+			open_outfile(&px, argv[argc - 1]);
+		pipex_process(argv, envp, &px, cmd++);
+	}
 	return (0);
 }

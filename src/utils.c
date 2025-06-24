@@ -6,23 +6,23 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 18:21:51 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/23 17:56:23 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/24 18:11:20 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void	open_files(char *file1, char *file2, t_pipex *px)
+void	open_outfile(t_pipex *px, char *file)
 {
-	px->fd[0] = open(file1, O_RDONLY);
-	if (px->fd[0] == -1)
-		error_exit("infile open error", px);
-	px->fd[1] = open(file2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (px->fd[1] == -1)
-		error_exit("outfile open error", px);
+	if (px->first_cmd == 2)
+		px->file_fd[1] = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (px->first_cmd == 3)
+		px->file_fd[1] = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (px->file_fd[1] == -1)
+		perror(file);
 }
 
-char	**find_path_var(char **envp)
+char	**find_path_var(char **envp, t_pipex *px, char **args)
 {
 	int		i;
 	char	*temp;
@@ -40,72 +40,47 @@ char	**find_path_var(char **envp)
 		}
 		i++;
 	}
+	free_array(args);
+	error_exit("path var NULL", px);
 	return (NULL);
 }
 
-char	*cmd_path(char **envp, char **args)
+char	*cmd_path(char **envp, char **args, t_pipex *px)
 {
 	int		i;
+	char	**path;
+	char *pathname;
+
+	if (!args)
+		error_exit("command split error", px);
+	pathname = NULL;
+	if (!ft_strchr(args[0], '/'))
+	{
+		path = find_path_var(envp, px, args);
+		i = 0;
+		while (!pathname && path[i])
+			pathname = path_validate(path, i++, args[0]);
+		free_array(path);
+	}
+	if (!pathname)
+	{
+		pathname = ft_strdup(args[0]);
+		if (!pathname)
+			error_exit("path strdup error", px);
+	}		
+	return (pathname);
+}
+
+char *path_validate(char **path, int i, char *cmd)
+{
 	char	*dirname;
 	char	*pathname;
-	char	**path;
-
-	path = find_path_var(envp);
-	if (!path)
-		return (ft_putendl_fd("path var NULL", 2), NULL);
-	i = 0;
-	while (path[i])
-	{
-		dirname = ft_strjoin(path[i], "/");
-		pathname = ft_strjoin(dirname, args[0]);
-		free(dirname);
-		if (!access(pathname, X_OK))
-		{
-			free_array(path);
-			return (pathname);
-		}
-		free(pathname);
-		i++;
-	}
-	free_array(path);
+	
+	dirname = ft_strjoin(path[i], "/");
+	pathname = ft_strjoin(dirname, cmd);
+	free(dirname);
+	if (!access(pathname, X_OK))
+		return (pathname);
+	free(pathname);
 	return (NULL);
-}
-
-void	fork_process(char *cmd, char **envp, t_pipex *px, int step)
-{
-	char	*path;
-	char	**args;
-
-	args = ft_split(cmd, ' ');
-	if (!args)
-		error_exit("exec args error", px);
-	if (!ft_strchr(cmd, '/'))
-		path = cmd_path(envp, args);
-	else
-		path = ft_strdup(args[0]);
-	if (!path)
-		error_exit("exec path error", px);
-	duplicate_fds(step, px);
-	fds_handle(px, 1);
-	execve(path, args, envp);
-	free(path);
-	free_array(args);
-}
-
-void	duplicate_fds(int step, t_pipex *px)
-{
-	if (!step)
-	{
-		if (dup2(px->fd[0], STDIN_FILENO) < 0)
-			error_exit("read infile dup error", px);
-		if (dup2(px->p_fd[1], STDOUT_FILENO) < 0)
-			error_exit("read outfile dup error", px);
-	}
-	else
-	{
-		if (dup2(px->p_fd[0], STDIN_FILENO) < 0)
-			error_exit("write infile dup error", px);
-		if (dup2(px->fd[1], STDOUT_FILENO) < 0)
-			error_exit("write outfile dup error", px);
-	}
 }
