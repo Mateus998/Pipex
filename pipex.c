@@ -6,12 +6,12 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:09 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/24 17:27:41 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:14:22 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
+//arrumar funcoes do arg handle
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipex	px;

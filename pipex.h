@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:15 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/24 17:26:22 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:04:14 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ char	*path_validate(char **path, int i, char *cmd);
 void	pipex_process(char **argv, char **envp, t_pipex *px, int proc);
 void	create_pipe(t_pipex *px, int cmd);
 void	here_doc_fill(char **argv, t_pipex *px);
+char	**create_args(char *s);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/24 12:25:31 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/25 20:04:35 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 		error_exit("fork process error", px);
 	else if (pid == 0)
 	{
-		args = ft_split(argv[cmd], ' ');
+		args = create_args(argv[cmd]);
 		path = cmd_path(envp, args, px);
 		if (dup2(px->prev[0], STDIN_FILENO) < 0)
 			error_exit("read fd dup error", px);

@@ -31,3 +31,52 @@ Pai - Close p2[0] e fd_out
 Dicas para codificar o loop
 Ter ponteiros var que apontam para os fds dos pipes que vao alternar e ter uma função que faz switch neles
 Assim, no loop chamo sempre o mesmo ponteiro, mas o valor dele sera diferente
+
+"''g'r''e'p''      ' li''''n''e'' '3''    'file 2'"
+
+static char	**create_args(char *s)
+{
+	int		i;
+	char	*arg;
+	char	**args;
+
+	arg = NULL;
+	args = NULL;
+	i = 0;
+	ft_printf("[");
+	while (s[i])
+	{
+		if (s[i] == '\'') // dentro aspas
+		{
+			// concatenar chars
+			i++;
+			while (s[i] && s[i] != '\'')
+				join_arg(&arg, s[i++]);
+			if (s[i])
+				i++;
+		}
+		else if (s[i] == ' ') // next arg
+		{
+			while (s[i] && s[i] == ' ')
+				i++;
+			// fill double array
+            realloc_array(&args, arg);
+			ft_printf("%s", arg);
+			ft_printf("]");
+			ft_printf("\n");
+			ft_printf("[");
+			free(arg);
+			arg = NULL;
+		}
+		else // fora aspas
+		{
+			// concatecar chars
+			while (s[i] && s[i] != ' ' && s[i] != '\'')
+				join_arg(&arg, s[i++]);
+		}
+	}
+    realloc_array(&args, arg);
+	printf("%s]\n", arg);
+	free(arg);
+    return (args);
+}
