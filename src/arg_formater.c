@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 11:07:07 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/26 14:00:58 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:05:08 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,6 @@ static int	ft_realloc(char **array, char ***new, char *str)
 	while (array[i])
 		i++;
 	*new = (char **)malloc((i + 2) * sizeof(char *));
-	//error checked...
-	if (i == 1)
-	{
-		free(*new);
-		*new = NULL;
-	}
 	if (!*new)
 		return (free_array(array), free(str), 0);
 	i = 0;
@@ -65,8 +59,8 @@ static int	realloc_array(char ***array, char **str)
 
 	status = 1;
 	new = NULL;
-	if (!str)
-		return (0);
+	if (!str || !*str)
+		return (1);
 	else if (!*array)
 	{
 		new = (char **)malloc(2 * sizeof(char *));
@@ -119,20 +113,19 @@ char	**create_args(char *s)
 	int		i;
 	char	*arg;
 	char	**args;
-	int		status;
 
 	arg = NULL;
 	args = NULL;
-	status = 1;
 	i = 0;
+	quotes_count(s);
+	if (empty_array_check(s))
+		return (empty_array());
 	while (s[i])
 	{
-		status = str_loop(&i, s, &arg, &args);
-		if (status != 1)
-			return (ft_putendl_fd("args allocation error", 2), NULL);
+		if (str_loop(&i, s, &arg, &args) != 1)
+			return (ft_putendl_fd("args allocation1 error", 2), NULL);
 	}
-	status = realloc_array(&args, &arg);
-	if (status != 1)
-		return (ft_putendl_fd("args allocation error", 2), NULL);
+	if (realloc_array(&args, &arg) != 1)
+		return (ft_putendl_fd("args allocation2 error", 2), NULL);
 	return (args);
 }

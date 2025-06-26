@@ -6,13 +6,12 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:15 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/25 20:04:14 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:27:36 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
-
 # include "libft/libft.h"
 
 typedef struct s_pipex
@@ -35,10 +34,14 @@ void	ft_close(int *fd);
 
 // utils
 void	open_outfile(t_pipex *px, char *file);
-char	**find_path_var(char **envp, t_pipex *px, char **args);
-char	*cmd_path(char **envp, char **args, t_pipex *px);
+char	**find_path_var(char **envp, char **args);
+char	*cmd_path(char **envp, char **args);
 char	*get_next_line_px(int fd, char *limiter);
 char	*path_validate(char **path, int i, char *cmd);
+void	quotes_count(char *s);
+void	arguments_count(int argc);
+int		empty_array_check(char *s);
+char	**empty_array(void);
 
 // process
 void	pipex_process(char **argv, char **envp, t_pipex *px, int proc);

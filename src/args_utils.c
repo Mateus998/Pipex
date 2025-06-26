@@ -1,33 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   here_doc.c                                         :+:      :+:    :+:   */
+/*   args_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/24 10:34:42 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/24 17:21:50 by mateferr         ###   ########.fr       */
+/*   Created: 2025/06/26 17:55:41 by mateferr          #+#    #+#             */
+/*   Updated: 2025/06/26 19:18:26 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void	here_doc_fill(char **argv, t_pipex *px)
+char	**empty_array(void)
 {
-	char	*line;
-	size_t	lim;
+	char	**new;
 
-	if (pipe(px->file_fd) < 0)
-		error_exit("pipe error", px);
-	lim = ft_strlen(argv[2]);
-	line = get_next_line_px(STDIN_FILENO, argv[2]);
-	while (line && ft_strncmp(line, argv[2], lim))
+	new = (char **)malloc(2 * sizeof(char *));
+	if (!new)
+		return (NULL);
+	new[0] = ft_strdup("");
+	if (!new[0])
+		return (free(new), NULL);
+	new[1] = NULL;
+	return (new);
+}
+
+int	empty_array_check(char *s)
+{
+	int		i;
+	size_t	chr;
+
+	i = 0;
+	chr = 0;
+	if (!*s)
+		return (1);
+	while (s[i])
 	{
-		ft_putstr_fd(line, px->file_fd[1]);
-		free(line);
-		line = get_next_line_px(STDIN_FILENO, argv[2]);
+		if (s[i] == '\'' || s[i] == ' ')
+			chr++;
+		i++;
 	}
-	free(line);
-	ft_close(&px->file_fd[1]);
-    px->first_cmd = 3;
+	if (chr == ft_strlen(s))
+		return (1);
+	return (0);
 }

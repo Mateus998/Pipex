@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 15:24:57 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/23 15:59:34 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/26 16:15:38 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 void	error_exit(char *msg, t_pipex *px)
 {
 	fds_handle(px, 1);
-	perror(msg);
+	if (msg)
+		perror(msg);
 	exit(1);
 }
 

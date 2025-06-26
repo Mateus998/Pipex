@@ -1,2 +1,11 @@
-line 2
-line 2
+a.txt
+b.txt
+libft
+Makefile
+mandatory
+notes.txt
+pipex
+pipex.c
+pipex.h
+src
+tests.c

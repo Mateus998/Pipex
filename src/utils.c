@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 18:21:51 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/24 18:11:20 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:17:55 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	open_outfile(t_pipex *px, char *file)
 		perror(file);
 }
 
-char	**find_path_var(char **envp, t_pipex *px, char **args)
+char	**find_path_var(char **envp, char **args)
 {
 	int		i;
 	char	*temp;
@@ -41,22 +41,24 @@ char	**find_path_var(char **envp, t_pipex *px, char **args)
 		i++;
 	}
 	free_array(args);
-	error_exit("path var NULL", px);
+	ft_putendl_fd("path var not found", 2);
 	return (NULL);
 }
 
-char	*cmd_path(char **envp, char **args, t_pipex *px)
+char	*cmd_path(char **envp, char **args)
 {
 	int		i;
 	char	**path;
-	char *pathname;
+	char	*pathname;
 
 	if (!args)
-		error_exit("command split error", px);
+		return (NULL);
 	pathname = NULL;
 	if (!ft_strchr(args[0], '/'))
 	{
-		path = find_path_var(envp, px, args);
+		path = find_path_var(envp, args);
+		if (!path)
+			return (NULL);
 		i = 0;
 		while (!pathname && path[i])
 			pathname = path_validate(path, i++, args[0]);
@@ -66,16 +68,16 @@ char	*cmd_path(char **envp, char **args, t_pipex *px)
 	{
 		pathname = ft_strdup(args[0]);
 		if (!pathname)
-			error_exit("path strdup error", px);
-	}		
+			ft_putendl_fd("path allocation error", 2);
+	}
 	return (pathname);
 }
 
-char *path_validate(char **path, int i, char *cmd)
+char	*path_validate(char **path, int i, char *cmd)
 {
 	char	*dirname;
 	char	*pathname;
-	
+
 	dirname = ft_strjoin(path[i], "/");
 	pathname = ft_strjoin(dirname, cmd);
 	free(dirname);
@@ -83,4 +85,13 @@ char *path_validate(char **path, int i, char *cmd)
 		return (pathname);
 	free(pathname);
 	return (NULL);
+}
+
+void	arguments_count(int argc)
+{
+	if (argc < 5)
+	{
+		ft_putendl_fd("4 arguments minimum", 2);
+		exit(1);
+	}
 }
