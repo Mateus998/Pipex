@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/26 19:28:13 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/27 12:11:54 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	here_doc_fill(char **argv, t_pipex *px)
 		error_exit("pipe error", px);
 	lim = ft_strlen(argv[2]);
 	line = get_next_line_px(STDIN_FILENO, argv[2]);
-	while (line && ft_strncmp(line, argv[2], lim))
+	while (line && px_strncmp(line, argv[2], lim))
 	{
 		ft_putstr_fd(line, px->file_fd[1]);
 		free(line);
@@ -100,10 +100,11 @@ void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 		error_exit("fork process error", px);
 	else if (pid == 0)
 	{
+		if (dup2(px->prev[0], STDIN_FILENO) == -1)
+			error_exit(NULL, px);
+		dup2(px->corr[1], STDOUT_FILENO);
 		args = create_args(argv[cmd]);
 		path = cmd_path(envp, args);
-		dup2(px->prev[0], STDIN_FILENO);
-		dup2(px->corr[1], STDOUT_FILENO);
 		close_px(px);
 		if (!path)
 			process_exit(args, NULL);

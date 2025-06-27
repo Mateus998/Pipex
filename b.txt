@@ -1,6 +1,11 @@
-line 1
-ijfsoi
-ijfsoi
-LIM
-wwhfou
-aeirg
+a.txt
+b.txt
+libft
+Makefile
+mandatory
+notes.txt
+pipex
+pipex.c
+pipex.h
+src
+tests.c

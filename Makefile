@@ -6,7 +6,7 @@
 #    By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/11 12:45:57 by mateferr          #+#    #+#              #
-#    Updated: 2025/06/26 18:01:53 by mateferr         ###   ########.fr        #
+#    Updated: 2025/06/27 12:19:05 by mateferr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ src/pipe_process.c src/arg_formater.c src/args_utils.c
 OBJ = $(SRC:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 

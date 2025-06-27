@@ -1,11 +1,2 @@
-a.txt
-b.txt
-libft
-Makefile
-mandatory
-notes.txt
-pipex
-pipex.c
-pipex.h
-src
-tests.c
+11
+1

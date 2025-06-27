@@ -20,12 +20,14 @@ void print_array(char **a)
     free(a);
 }
 
-int	main(int argc, char **argv)
+int	main()
 {
-	if (argc < 2)
-		return (1);
-    char **a = create_args(argv[1]);
-    printf("print array\n");
-    print_array(a);
+	int p[2];
+    pipe(p);
+    write(p[1], "ola", 3);
+    char *buff = malloc(3);
+    read(p[0], buff, 3);
+    printf("%s\n", buff);
+    free(buff);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:15 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/26 19:27:36 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/06/27 11:29:37 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	quotes_count(char *s);
 void	arguments_count(int argc);
 int		empty_array_check(char *s);
 char	**empty_array(void);
+int		px_strncmp(const char *s1, const char *s2, size_t n);
 
 // process
 void	pipex_process(char **argv, char **envp, t_pipex *px, int proc);
