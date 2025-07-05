@@ -23,6 +23,8 @@ typedef struct s_pipex
 	int	first_cmd;
 	int	*corr;
 	int	*prev;
+	char **args;
+	char *path;
 }		t_pipex;
 
 // frees & errors
@@ -33,21 +35,15 @@ void	fds_handle(t_pipex *px, int closing);
 void	ft_close(int *fd);
 
 // utils
-void	open_outfile(t_pipex *px, char *file);
-char	**find_path_var(char **envp, char **args);
-char	*cmd_path(char **envp, char **args);
+char	*cmd_path(char **envp, t_pipex *px);
 char	*get_next_line_px(int fd, char *limiter);
-char	*path_validate(char **path, int i, char *cmd);
-void	quotes_count(char *s);
-void	arguments_count(int argc);
-int		empty_array_check(char *s);
-char	**empty_array(void);
+char	**px_split(char const *s);
 int		px_strncmp(const char *s1, const char *s2, size_t n);
+void	file_read(t_pipex *px, char *file1, char *file2);
 
 // process
-void	pipex_process(char **argv, char **envp, t_pipex *px, int proc);
+void	pipex_process(char **envp, t_pipex *px, int proc);
 void	create_pipe(t_pipex *px, int cmd);
 void	here_doc_fill(char **argv, t_pipex *px);
-char	**create_args(char *s);
 
 #endif

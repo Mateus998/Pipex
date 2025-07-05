@@ -12,28 +12,16 @@
 
 #include "../pipex.h"
 
-void	quotes_count(char *s)
-{
-	int	i;
-	int	quotes;
-
-	i = 0;
-	quotes = 0;
-	while (s[i])
-	{
-		if (s[i] == '\'')
-			quotes++;
-		i++;
-	}
-	if (quotes % 2 != 0)
-		ft_putendl_fd("Open quotes!!!", 2);
-}
-
 void	here_doc_fill(char **argv, t_pipex *px)
 {
 	char	*line;
 	size_t	lim;
 
+	if (px->argc < 6)
+	{
+		ft_putendl_fd("5 arguments minimum", 2);
+		exit(1);
+	}
 	if (pipe(px->file_fd) < 0)
 		error_exit("pipe error", px);
 	lim = ft_strlen(argv[2]);
@@ -47,6 +35,9 @@ void	here_doc_fill(char **argv, t_pipex *px)
 	free(line);
 	ft_close(&px->file_fd[1]);
 	px->first_cmd = 3;
+	px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (px->file_fd[1] == -1)
+		perror(argv[px->argc - 1]);
 }
 
 void	create_pipe(t_pipex *px, int cmd)
@@ -76,23 +67,21 @@ void	create_pipe(t_pipex *px, int cmd)
 		error_exit("pipe creation error", px);
 }
 
-void	process_exit(char **args, char *path)
+void	process_exit(t_pipex *px)
 {
 	close(0);
 	close(1);
-	ft_putstr_fd("command not found: ", 2);
-	ft_putendl_fd(args[0], 2);
-	if (path)
-		free(path);
-	free_array(args);
+	ft_putstr_fd(px->args[0], 2);
+	ft_putendl_fd(": command not found", 2);
+	if (px->path)
+		free(px->path);
+	free_array(px->args);
 	exit(127);
 }
 
-void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
+void	pipex_process(char **envp, t_pipex *px, int cmd)
 {
 	pid_t	pid;
-	char	**args;
-	char	*path;
 
 	create_pipe(px, cmd);
 	pid = fork();
@@ -103,15 +92,10 @@ void	pipex_process(char **argv, char **envp, t_pipex *px, int cmd)
 		if (dup2(px->prev[0], STDIN_FILENO) == -1)
 			error_exit(NULL, px);
 		dup2(px->corr[1], STDOUT_FILENO);
-		args = create_args(argv[cmd]);
-		path = cmd_path(envp, args);
 		close_px(px);
-		if (!path)
-			process_exit(args, NULL);
-		execve(path, args, envp);
-		process_exit(args, path);
+		execve(px->path, px->args, envp);
+		process_exit(px);
 	}
 	ft_close(&px->prev[0]);
 	ft_close(&px->corr[1]);
-	waitpid(pid, NULL, 0);
 }

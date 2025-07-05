@@ -129,3 +129,37 @@ char	**create_args(char *s)
 		return (ft_putendl_fd("args allocation2 error", 2), NULL);
 	return (args);
 }
+
+char	**empty_array(void)
+{
+	char	**new;
+
+	new = (char **)malloc(2 * sizeof(char *));
+	if (!new)
+		return (NULL);
+	new[0] = ft_strdup("");
+	if (!new[0])
+		return (free(new), NULL);
+	new[1] = NULL;
+	return (new);
+}
+
+int	empty_array_check(char *s)
+{
+	int		i;
+	size_t	chr;
+
+	i = 0;
+	chr = 0;
+	if (!*s)
+		return (1);
+	while (s[i])
+	{
+		if (s[i] == '\'' || s[i] == ' ')
+			chr++;
+		i++;
+	}
+	if (chr == ft_strlen(s))
+		return (1);
+	return (0);
+}

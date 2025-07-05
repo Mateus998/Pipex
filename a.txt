@@ -1,2 +1,12 @@
-11
-1
+Makefile
+a.out
+a.txt
+b.txt
+libft
+not_used
+notes.txt
+pipex
+pipex.c
+pipex.h
+src
+tests.c

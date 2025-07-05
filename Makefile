@@ -13,7 +13,7 @@
 NAME = pipex
 
 SRC = src/free_exits.c src/utils.c src/get_next_line_px.c \
-src/pipe_process.c src/arg_formater.c src/args_utils.c
+src/pipe_process.c src/px_split.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -25,10 +25,6 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(MAKE) -C libft all
 	$(CC) $(CFLAGS) $(OBJ) pipex.c -Llibft -lft -o $(NAME)
-
-test: $(OBJ)
-	$(MAKE) -C libft all
-	$(CC) $(CFLAGS) $(OBJ) tests.c -Llibft -lft
 
 clean:
 	$(MAKE) -C libft clean

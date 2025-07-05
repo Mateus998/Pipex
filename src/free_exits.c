@@ -14,9 +14,13 @@
 
 void	error_exit(char *msg, t_pipex *px)
 {
+	if (px->args)
+		free_array(px->args);
+	if (px->path)
+		free(px->path);
 	fds_handle(px, 1);
 	if (msg)
-		perror(msg);
+		ft_putendl_fd(msg, 2);
 	exit(1);
 }
 
@@ -49,6 +53,7 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
+	array = NULL;
 }
 
 void	ft_close(int *fd)
