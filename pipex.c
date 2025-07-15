@@ -36,4 +36,3 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
-// gestao de args feita falta contagem de quotes e arrumar peth find...
