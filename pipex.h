@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:15 by mateferr          #+#    #+#             */
-/*   Updated: 2025/08/11 10:21:49 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/08/11 12:02:44 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void		ft_close(int *fd);
 
 // utils
 char		*cmd_path(char **envp, t_pipex *px);
-// char		*get_next_line_px(int fd, char *limiter);
 char		**px_split(char const *s);
 int			px_strncmp(const char *s1, const char *s2, size_t n);
 void		file_read(t_pipex *px, char *file1, char *file2);
