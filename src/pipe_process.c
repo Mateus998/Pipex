@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/27 12:11:54 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/08/11 10:24:00 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,18 @@ void	here_doc_fill(char **argv, t_pipex *px)
 	if (pipe(px->file_fd) < 0)
 		error_exit("pipe error", px);
 	lim = ft_strlen(argv[2]);
-	line = get_next_line_px(STDIN_FILENO, argv[2]);
+	line = get_next_line(STDIN_FILENO);
 	while (line && px_strncmp(line, argv[2], lim))
 	{
 		ft_putstr_fd(line, px->file_fd[1]);
 		free(line);
-		line = get_next_line_px(STDIN_FILENO, argv[2]);
+		line = get_next_line(STDIN_FILENO);
 	}
 	free(line);
 	ft_close(&px->file_fd[1]);
 	px->first_cmd = 3;
-	px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND,
+			0644);
 	if (px->file_fd[1] == -1)
 		perror(argv[px->argc - 1]);
 }

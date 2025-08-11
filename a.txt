@@ -1,12 +1,10 @@
-Makefile
-a.out
 a.txt
 b.txt
 libft
-not_used
+Makefile
 notes.txt
+not_used
 pipex
 pipex.c
 pipex.h
 src
-tests.c
