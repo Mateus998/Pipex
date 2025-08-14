@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 11:38:09 by mateferr          #+#    #+#             */
-/*   Updated: 2025/06/26 19:27:43 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:42:42 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ int	main(int argc, char **argv, char **envp)
 		pipex_process(envp, &px, cmd++);
 		free(px.path);
 		free_array(px.args);
-		wait(NULL);
 	}
+	waitpid(px.pid, NULL, 0);
+	px.processes--;
+	while (px.processes--)
+		wait(NULL);
 	return (0);
 }

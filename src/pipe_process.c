@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/08/11 10:24:00 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:35:23 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,12 @@ void	process_exit(t_pipex *px)
 
 void	pipex_process(char **envp, t_pipex *px, int cmd)
 {
-	pid_t	pid;
-
 	create_pipe(px, cmd);
-	pid = fork();
-	if (pid == -1)
+	px->pid = fork();
+	px->processes++;
+	if (px->pid == -1)
 		error_exit("fork process error", px);
-	else if (pid == 0)
+	else if (px->pid == 0)
 	{
 		if (dup2(px->prev[0], STDIN_FILENO) == -1)
 			error_exit(NULL, px);
