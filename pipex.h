@@ -21,6 +21,7 @@ typedef struct s_pipex
 	int		p2_fd[2];
 	pid_t pid;
 	int processes;
+	int exit_status;
 	int		argc;
 	int		first_cmd;
 	int		*corr;
@@ -40,10 +41,9 @@ void		ft_close(int *fd);
 char		*cmd_path(char **envp, t_pipex *px);
 char		**px_split(char const *s);
 int			px_strncmp(const char *s1, const char *s2, size_t n);
-void		file_read(t_pipex *px, char *file1, char *file2);
 
 // process
-void		pipex_process(char **envp, t_pipex *px, int proc);
+void		pipex_process(char **envp, t_pipex *px, int proc, char **argv);
 void		create_pipe(t_pipex *px, int cmd);
 void		here_doc_fill(char **argv, t_pipex *px);
 

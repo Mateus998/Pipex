@@ -12,22 +12,6 @@
 
 #include "../pipex.h"
 
-void	file_read(t_pipex *px, char *file1, char *file2)
-{
-	if (px->argc < 5)
-	{
-		ft_putendl_fd("4 arguments minimum", 2);
-		exit(1);
-	}
-	px->file_fd[0] = open(file1, O_RDONLY);
-	if (px->file_fd[0] == -1)
-		perror(file1);
-	px->first_cmd = 2;
-	px->file_fd[1] = open(file2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (px->file_fd[1] == -1)
-		perror(file2);
-}
-
 int	px_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;

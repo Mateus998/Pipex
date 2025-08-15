@@ -35,10 +35,6 @@ void	here_doc_fill(char **argv, t_pipex *px)
 	free(line);
 	ft_close(&px->file_fd[1]);
 	px->first_cmd = 3;
-	px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND,
-			0644);
-	if (px->file_fd[1] == -1)
-		perror(argv[px->argc - 1]);
 }
 
 void	create_pipe(t_pipex *px, int cmd)
@@ -80,7 +76,7 @@ void	process_exit(t_pipex *px)
 	exit(127);
 }
 
-void	pipex_process(char **envp, t_pipex *px, int cmd)
+void	pipex_process(char **envp, t_pipex *px, int cmd, char **argv)
 {
 	create_pipe(px, cmd);
 	px->pid = fork();
@@ -89,10 +85,27 @@ void	pipex_process(char **envp, t_pipex *px, int cmd)
 		error_exit("fork process error", px);
 	else if (px->pid == 0)
 	{
+		if (cmd == px->first_cmd && ft_strncmp("here_doc", argv[1], 8))
+		{
+			px->file_fd[0] = open(argv[1], O_RDONLY);
+			if (px->file_fd[0] == -1)
+				error_exit("open infile error", px);
+		}
+		else if (cmd == px->argc - 2)
+		{
+			if (ft_strncmp("here_doc", argv[1], 8))
+				px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			else
+				px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+			if (px->file_fd[1] == -1)
+				error_exit("open outfile error", px);
+		}
 		if (dup2(px->prev[0], STDIN_FILENO) == -1)
 			error_exit(NULL, px);
 		dup2(px->corr[1], STDOUT_FILENO);
 		close_px(px);
+		if (!px->args[0])
+			process_exit(px);
 		execve(px->path, px->args, envp);
 		process_exit(px);
 	}
