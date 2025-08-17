@@ -26,71 +26,27 @@ int	px_strncmp(const char *s1, const char *s2, size_t n)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-static char	**find_path_var(char **envp, t_pipex *px)
+void	here_doc_fill(char **argv, t_pipex *px)
 {
-	int		i;
-	char	*temp;
-	char	**path;
+	char	*line;
+	size_t	lim;
 
-	i = 0;
-	while (envp[i])
+	if (px->argc < 6)
 	{
-		if (!ft_strncmp(envp[i], "PATH=", 5))
-		{
-			temp = ft_strtrim(envp[i], "PATH=");
-			if (!temp)
-				error_exit("allocation error", px);
-			path = ft_split(temp, ':');
-			free(temp);
-			if (!path)
-				error_exit("allocation error", px);
-			return (path);
-		}
-		i++;
+		ft_putendl_fd("5 arguments minimum", 2);
+		exit(1);
 	}
-	return (NULL);
-}
-
-static char	*path_validate(char *path, char *cmd, t_pipex *px)
-{
-	char	*dirname;
-	char	*pathname;
-
-	dirname = ft_strjoin(path, "/");
-	if (!dirname)
-		error_exit("allocation error", px);
-	pathname = ft_strjoin(dirname, cmd);
-	free(dirname);
-	if (!pathname)
-		error_exit("allocation error", px);
-	if (!access(pathname, X_OK))
-		return (pathname);
-	free(pathname);
-	return (NULL);
-}
-
-char	*cmd_path(char **envp, t_pipex *px)
-{
-	int		i;
-	char	**path;
-	char	*pathname;
-
-	if (!px->args)
-		error_exit(NULL, px);
-	pathname = NULL;
-	if (!ft_strchr(px->args[0], '/') && *envp)
+	if (pipe(px->file_fd) < 0)
+		error_exit("pipe error", px);
+	lim = ft_strlen(argv[2]);
+	line = get_next_line(STDIN_FILENO);
+	while (line && px_strncmp(line, argv[2], lim))
 	{
-		path = find_path_var(envp, px);
-		i = 0;
-		while (path && !pathname && path[i])
-			pathname = path_validate(path[i++], px->args[0], px);
-		free_array(path);
+		ft_putstr_fd(line, px->file_fd[1]);
+		free(line);
+		line = get_next_line(STDIN_FILENO);
 	}
-	if (!pathname)
-	{
-		pathname = ft_strdup(px->args[0]);
-		if (!pathname)
-			error_exit("allocation error", px);
-	}
-	return (pathname);
+	free(line);
+	ft_close(&px->file_fd[1]);
+	px->first_cmd = 3;
 }

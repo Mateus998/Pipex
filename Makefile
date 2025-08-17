@@ -12,7 +12,8 @@
 
 NAME = pipex
 
-SRC = src/free_exits.c src/utils.c src/pipe_process.c src/px_split.c
+SRC = src/free_exits.c src/utils.c src/pipe_process.c src/px_split.c \
+src/cmd_path.c
 
 OBJ = $(SRC:.c=.o)
 

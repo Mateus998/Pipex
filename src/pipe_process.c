@@ -12,32 +12,7 @@
 
 #include "../pipex.h"
 
-void	here_doc_fill(char **argv, t_pipex *px)
-{
-	char	*line;
-	size_t	lim;
-
-	if (px->argc < 6)
-	{
-		ft_putendl_fd("5 arguments minimum", 2);
-		exit(1);
-	}
-	if (pipe(px->file_fd) < 0)
-		error_exit("pipe error", px);
-	lim = ft_strlen(argv[2]);
-	line = get_next_line(STDIN_FILENO);
-	while (line && px_strncmp(line, argv[2], lim))
-	{
-		ft_putstr_fd(line, px->file_fd[1]);
-		free(line);
-		line = get_next_line(STDIN_FILENO);
-	}
-	free(line);
-	ft_close(&px->file_fd[1]);
-	px->first_cmd = 3;
-}
-
-void	create_pipe(t_pipex *px, int cmd)
+static void	create_pipe(t_pipex *px, int cmd)
 {
 	int	*temp;
 
@@ -64,7 +39,26 @@ void	create_pipe(t_pipex *px, int cmd)
 		error_exit("pipe creation error", px);
 }
 
-void	process_exit(t_pipex *px)
+static void child_process_file_open(t_pipex *px, int cmd, char **argv)
+{
+	if (cmd == px->first_cmd && ft_strncmp("here_doc", argv[1], 8))
+	{
+		px->file_fd[0] = open(argv[1], O_RDONLY);
+		if (px->file_fd[0] == -1)
+			error_exit("open infile error", px);
+	}
+	else if (cmd == px->argc - 2)
+	{
+		if (ft_strncmp("here_doc", argv[1], 8))
+			px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else
+			px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (px->file_fd[1] == -1)
+			error_exit("open outfile error", px);
+	}
+}
+
+static void	process_exit(t_pipex *px)
 {
 	close(0);
 	close(1);
@@ -76,6 +70,18 @@ void	process_exit(t_pipex *px)
 	exit(127);
 }
 
+static void fd_dup_execve(t_pipex *px, char **envp)
+{
+	if (dup2(px->prev[0], STDIN_FILENO) == -1)
+			error_exit(NULL, px);
+		dup2(px->corr[1], STDOUT_FILENO);
+		close_px(px);
+		if (!px->args[0])
+			process_exit(px);
+		execve(px->path, px->args, envp);
+		process_exit(px);
+}
+
 void	pipex_process(char **envp, t_pipex *px, int cmd, char **argv)
 {
 	create_pipe(px, cmd);
@@ -85,29 +91,8 @@ void	pipex_process(char **envp, t_pipex *px, int cmd, char **argv)
 		error_exit("fork process error", px);
 	else if (px->pid == 0)
 	{
-		if (cmd == px->first_cmd && ft_strncmp("here_doc", argv[1], 8))
-		{
-			px->file_fd[0] = open(argv[1], O_RDONLY);
-			if (px->file_fd[0] == -1)
-				error_exit("open infile error", px);
-		}
-		else if (cmd == px->argc - 2)
-		{
-			if (ft_strncmp("here_doc", argv[1], 8))
-				px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			else
-				px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
-			if (px->file_fd[1] == -1)
-				error_exit("open outfile error", px);
-		}
-		if (dup2(px->prev[0], STDIN_FILENO) == -1)
-			error_exit(NULL, px);
-		dup2(px->corr[1], STDOUT_FILENO);
-		close_px(px);
-		if (!px->args[0])
-			process_exit(px);
-		execve(px->path, px->args, envp);
-		process_exit(px);
+		child_process_file_open(px, cmd, argv);
+		fd_dup_execve(px, envp);
 	}
 	ft_close(&px->prev[0]);
 	ft_close(&px->corr[1]);
