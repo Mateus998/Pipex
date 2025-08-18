@@ -6,7 +6,7 @@
 /*   By: mateferr <mateferr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 17:17:24 by mateferr          #+#    #+#             */
-/*   Updated: 2025/08/14 16:35:23 by mateferr         ###   ########.fr       */
+/*   Updated: 2025/08/18 10:17:55 by mateferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void	create_pipe(t_pipex *px, int cmd)
 		error_exit("pipe creation error", px);
 }
 
-static void child_process_file_open(t_pipex *px, int cmd, char **argv)
+static void	child_process_file_open(t_pipex *px, int cmd, char **argv)
 {
 	if (cmd == px->first_cmd && ft_strncmp("here_doc", argv[1], 8))
 	{
@@ -50,9 +50,11 @@ static void child_process_file_open(t_pipex *px, int cmd, char **argv)
 	else if (cmd == px->argc - 2)
 	{
 		if (ft_strncmp("here_doc", argv[1], 8))
-			px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			px->file_fd[1] = open(argv[px->argc - 1],
+					O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else
-			px->file_fd[1] = open(argv[px->argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+			px->file_fd[1] = open(argv[px->argc - 1],
+					O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (px->file_fd[1] == -1)
 			error_exit("open outfile error", px);
 	}
@@ -70,16 +72,16 @@ static void	process_exit(t_pipex *px)
 	exit(127);
 }
 
-static void fd_dup_execve(t_pipex *px, char **envp)
+static void	fd_dup_execve(t_pipex *px, char **envp)
 {
 	if (dup2(px->prev[0], STDIN_FILENO) == -1)
-			error_exit(NULL, px);
-		dup2(px->corr[1], STDOUT_FILENO);
-		close_px(px);
-		if (!px->args[0])
-			process_exit(px);
-		execve(px->path, px->args, envp);
+		error_exit(NULL, px);
+	dup2(px->corr[1], STDOUT_FILENO);
+	close_px(px);
+	if (!px->args[0])
 		process_exit(px);
+	execve(px->path, px->args, envp);
+	process_exit(px);
 }
 
 void	pipex_process(char **envp, t_pipex *px, int cmd, char **argv)
